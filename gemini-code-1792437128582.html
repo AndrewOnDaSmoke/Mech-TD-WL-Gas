@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teil 1: Mechanik, Wärmelehre, Thermodynamik & Strömung – MaReCuM Physik</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --exam: #f59e0b;
+      --exam-bg: rgba(245, 158, 11, 0.12);
+      --clinic: #10b981;
+      --clinic-bg: rgba(16, 185, 129, 0.12);
+      --low: #64748b;
+      --low-bg: rgba(100, 116, 139, 0.12);
+      --radius: 10px;
+    }
+    body.light {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-hover: #f8fafc;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --accent: #0284c7;
+      --accent-soft: rgba(2, 132, 199, 0.1);
+      --exam: #d97706;
+      --exam-bg: rgba(217, 119, 6, 0.08);
+      --clinic: #059669;
+      --clinic-bg: rgba(5, 150, 105, 0.08);
+      --low: #64748b;
+      --low-bg: rgba(100, 116, 139, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 290px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand { font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 2px; }
+    .subtitle { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 16px; }
+    .search-box {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      margin-bottom: 14px;
+      font-size: 0.88rem;
+    }
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .nav-btn:hover { background: var(--surface-hover); }
+    .nav-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      border-left: 3px solid var(--accent);
+    }
+    .controls {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ctrl-btn {
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: left;
+    }
+    .ctrl-btn.active-filter {
+      border-color: var(--exam);
+      background: var(--exam-bg);
+      color: var(--exam);
+    }
+    .main {
+      margin-left: 290px;
+      flex: 1;
+      padding: 32px 42px;
+      max-width: 1200px;
+    }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+    h1 { font-size: 1.75rem; margin-bottom: 6px; color: var(--accent); }
+    .section-lead { color: var(--text-muted); margin-bottom: 22px; font-size: 0.95rem; }
+    h2 {
+      font-size: 1.22rem;
+      margin: 28px 0 14px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    h3 { font-size: 1.04rem; margin: 10px 0 6px; color: var(--accent); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .card.exam-card {
+      border-left: 4px solid var(--exam);
+      background: linear-gradient(180deg, var(--exam-bg) 0%, var(--surface) 40%);
+    }
+    .card.clinic-card {
+      border-left: 4px solid var(--clinic);
+      background: linear-gradient(180deg, var(--clinic-bg) 0%, var(--surface) 40%);
+    }
+    .low-yield {
+      border: 1px dashed var(--low);
+      background: var(--low-bg);
+      opacity: 0.88;
+    }
+    body.exam-only .low-yield { display: none !important; }
+    .card ul, .card ol { padding-left: 20px; margin-top: 6px; }
+    .card li { margin-bottom: 6px; }
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .badge.exam { background: var(--exam-bg); color: var(--exam); border: 1px solid var(--exam); }
+    .badge.clinic { background: var(--clinic-bg); color: var(--clinic); border: 1px solid var(--clinic); }
+    .badge.low { background: var(--low-bg); color: var(--text-muted); border: 1px solid var(--low); }
+    .formula-box {
+      background: var(--bg);
+      border-left: 4px solid var(--accent);
+      padding: 10px 14px;
+      margin: 10px 0;
+      border-radius: 6px;
+      font-family: "Cambria Math", "Times New Roman", serif;
+      font-size: 1.06rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 4px;
+    }
+    .frac > span:first-child { border-bottom: 1px solid var(--text); padding-bottom: 1px; }
+    .frac > span:last-child { padding-top: 1px; }
+    .vec { text-decoration: overline; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.9rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    th, td { padding: 10px 12px; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+    details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      padding: 12px 16px;
+    }
+    summary { font-weight: 700; cursor: pointer; color: var(--accent); outline: none; }
+    details.low-yield summary { color: var(--text-muted); }
+    details[open] summary { margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .cite { font-size: 0.7rem; color: var(--text-muted); opacity: 0.75; margin-left: 3px; }
+    body.hide-cites .cite { display: none; }
+    .calc-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+    .calc-input {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      width: 110px;
+    }
+    @media (max-width: 860px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; }
+      .main { margin-left: 0; padding: 20px; }
+    }
+  </style>
+</head>
+<body class="hide-cites">
+
+  <aside class="sidebar">
+    <div class="brand">Teil 1: Mechanik & Thermo</div>
+    <div class="subtitle">Vorlesung Prof. Dr.-Ing. Jan Stallkamp <span class="cite">[cite: 1]</span></div>
+    <input type="text" id="searchInput" class="search-box" placeholder="Suche (z.B. Bernoulli, PEEP, Joule)..." oninput="filterContent()">
+
+    <button class="nav-btn active" onclick="openTab('sec1', this)">1. Kräfte, Momente & Festkörper</button>
+    <button class="nav-btn" onclick="openTab('sec2', this)">2. Kinematik, Energie & Leistung</button>
+    <button class="nav-btn" onclick="openTab('sec3', this)">3. Thermodynamik & Beatmung</button>
+    <button class="nav-btn" onclick="openTab('sec4', this)">4. Strömungsmechanik & Gase</button>
+
+    <div class="controls">
+      <button class="ctrl-btn" id="examFilterBtn" onclick="toggleExamMode()">🎯 Nur Prüfungsrelevantes: AUS</button>
+      <button class="ctrl-btn" onclick="document.body.classList.toggle('light')">🌗 Hell / Dunkel umschalten</button>
+      <button class="ctrl-btn" onclick="document.body.classList.toggle('hide-cites')">📑 Folien-Quellen ein/aus</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ==================== SEKTION 1: KRÄFTE & FESTKÖRPER ==================== -->
+    <section id="sec1" class="tab-section active">
+      <h1>1. Kräfte, Drehmoment & Festkörpermechanik</h1>
+      <p class="section-lead">Grundlagen der Technischen Mechanik (Statik, Kinematik, Dynamik/Kinetik) und ihre Bedeutung für den menschlichen Bewegungsapparat <span class="cite">[cite: 2, 4]</span>.</p>
+
+      <h2>1.1 Einteilung der Mechanik & Newtonsche Axiome</h2>
+      <div class="grid">
+        <div class="card exam-card">
+          <span class="badge exam">🔥 Klausur-Fokus</span>
+          <h3>Grundgesetz der Mechanik & Axiome</h3>
+          <div class="formula-box">
+            <span class="vec">F</span> = m · <span class="vec">a</span> &nbsp;|&nbsp; Einheit: 1 N = 1 kg · <span class="frac"><span>m</span><span>s<sup>2</sup></span></span> <span class="cite">[cite: 5]</span>
+          </div>
+          <ul>
+            <li><strong>Kinematik vs. Dynamik:</strong> <em>Kinematik</em> beschreibt reine Bewegung ohne Kraftwirkung; <em>Dynamik</em> untersucht den Einfluss von Kräften und unterteilt sich in <strong>Statik</strong> (Kräfte im Gleichgewicht, ruhende/stationäre Körper) und <strong>Kinetik</strong> (Kräfte, die den Bewegungszustand verändern) <span class="cite">[cite: 4]</span>.</li>
+            <li><strong>Gleichgewichts-Axiom:</strong> Zwei Kräfte sind im Gleichgewicht, wenn sie dieselbe Wirkungslinie haben, gleich groß und entgegengesetzt gerichtet sind <span class="cite">[cite: 6]</span>.</li>
+            <li><strong>Reaktions-Axiom (Actio = Reactio):</strong> Übt Körper 1 eine Kraft auf Körper 2 aus, wirkt eine gleich große, entgegengesetzt gerichtete Kraft auf Körper 1 zurück <span class="cite">[cite: 6]</span>.</li>
+            <li><strong>Übersetzungs-Axiom:</strong> Eine Kraft kann auf einem starren Körper entlang ihrer Wirkungslinie verschoben werden, ohne ihre Wirkung zu ändern <span class="cite">[cite: 6]</span>.</li>
+            <li><strong>Parallelogramm-Axiom:</strong> Kräfte addieren sich vektoriell: <span class="vec">F</span><sub>res</sub> = <span class="vec">F</span><sub>1</sub> + <span class="vec">F</span><sub>2</sub> <span class="cite">[cite: 6]</span>.</li>
+          </ul>
+        </div>
+
+        <div class="card exam-card">
+          <span class="badge exam">🔥 Klausur-Fokus</span>
+          <h3>Gewichtskraft, Reibung & Drehmoment</h3>
+          <div class="formula-box">
+            |<span class="vec">F</span><sub>G</sub>| = G · <span class="frac"><span>m<sub>1</sub> · m<sub>2</sub></span><span>r<sup>2</sup></span></span> &nbsp;⇒&nbsp; F<sub>G</sub> = m · g &nbsp;(mit g ≈ 9,81 <span class="frac"><span>m</span><span>s<sup>2</sup></span></span>) <span class="cite">[cite: 7, 16]</span>
+          </div>
+          <p><small>Parameter Erde: r<sub>earth</sub> = 6 378 140 m, m<sub>earth</sub> = 5,9722 · 10<sup>24</sup> kg, G = 6,673 · 10<sup>−11</sup> m<sup>3</sup>/(kg·s<sup>2</sup>) <span class="cite">[cite: 7]</span>.</small></p>
+          <div class="formula-box">
+            Normalreibung: <span class="vec">F</span><sub>R</sub> = μ · <span class="vec">F</span><sub>N</sub> <span class="cite">[cite: 8]</span>
+          </div>
+          <ul>
+            <li><strong>Haftreibung vs. Gleitreibung:</strong> Die Haftreibungszahl μ<sub>H</sub> ist stets größer als die Gleitreibungszahl μ<sub>G</sub> (z. B. Stahl auf Eis: 0,03 vs. 0,01; Stahl auf Stahl: 0,2 vs. 0,1; Stein auf Stein: 1,0 vs. 0,9) <span class="cite">[cite: 8]</span>.</li>
+            <li><strong>Drehmoment (Rotation um Drehachse/Gelenk):</strong>
+              <div class="formula-box">
+                <span class="vec">M</span> = <span class="vec">r</span><sub>⊥</sub> × <span class="vec">F</span> &nbsp;|&nbsp; |<span class="vec">M</span><sub>z</sub>| = |<span class="vec">r</span>| · |<span class="vec">F</span>| · sin(α) &nbsp;|&nbsp; 1 Nm = 1 <span class="frac"><span>kg · m<sup>2</sup></span><span>s<sup>2</sup></span></span> <span class="cite">[cite: 9]</span>
+              </div>
+              <em>Wichtig:</em> Nur die senkrecht zum Ortsvektor r stehende Kraftkomponente erzeugt ein Drehmoment <span class="cite">[cite: 9]</span>.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>1.2 Mechanische Spannung, Schubspannung & Elastizität</h2>
+      <div class="card exam-card">
+        <span class="badge exam">🔥 Klausur-Fokus</span>
+        <h3>Normalspannung (σ), Scherspannung (τ) & Hookesches Gesetz</h3>
+        <div class="formula-box">
+          Spannung = <span class="frac"><span>Kraft F</span><span>Fläche A</span></span> &nbsp;|&nbsp; Einheit: 1 <span class="frac"><span>N</span><span>m<sup>2</sup></span></span> = 1 Pa = 1 <span class="frac"><span>kg</span><span>s<sup>2</sup> · m</span></span> <span class="cite">[cite: 12, 24]</span>
+        </div>
+        <ul>
+          <li><strong>Normalspannung σ:</strong> Wirkt senkrecht zur Querschnittsfläche (Zug- oder Druckspannung): |σ| = |F| · sin(α) / A<sub>1</sub> (bei senkrechtem Angriff α = 90° gilt |σ| = |F| / A) <span class="cite">[cite: 12]</span>.</li>
+          <li><strong>Scherspannung / Schubspannung τ:</strong> Wirkt parallel in der Schnittebene: |τ| = |F| · cos(α) / A<sub>1</sub> <span class="cite">[cite: 12]</span>.</li>
+          <li><strong>Elastizitätsmodul E (Hookesches Gesetz):</strong> Beschreibt den linearen Zusammenhang zwischen Spannung σ und relativer Längenänderung (Dehnung ε, dimensionslos) <span class="cite">[cite: 13]</span>:
+            <div class="formula-box">E = <span class="frac"><span>σ</span><span>ε</span></span> &nbsp;⇔&nbsp; ε = <span class="frac"><span>1</span><span>E</span></span> · σ &nbsp;(Einheit von E: <span class="frac"><span>N</span><span>m<sup>2</sup></span></span> = Pa) <span class="cite">[cite: 13]</span></div>
+          </li>
+        </ul>
+      </div>
+
+      <details class="low-yield">
+        <summary>⚙️ Am Rande erwähnt (Ingenieurs-Exkurs): Brucharten, Kristallgitter, Balkentheorie & FEM</summary>
+        <ul>
+          <li><strong>Brucharten (Knochenfraktur, Folie 10):</strong> Ein <em>spröder Bruch</em> trennt das Material ohne nennenswerte vorherige Verformung; ein <em>duktiler Bruch</em> zeigt vor dem Versagen eine deutliche plastische Verformung <span class="cite">[cite: 10]</span>.</li>
+          <li><strong>Kristallgitter von Festkörpern (Folie 11):</strong> Die Verformbarkeit nimmt in dieser Reihenfolge ab: <em>kubisch flächenzentriert (kfz) → kubisch raumzentriert (krz) → hexagonal dichteste Kugelpackung (hdp)</em> <span class="cite">[cite: 11]</span>.</li>
+          <li><strong>Euler-Bernoulli-Balkentheorie & Flächenträgheitsmoment (Folie 13–14):</strong> Die Biegelinie eines belasteten Balkens genügt w'' = M(x)/(E·I) mit der Biegespannung σ<sub>B</sub> = M<sub>B</sub>/W und dem Flächenträgheitsmoment I = ∫ r<sup>2</sup> dA <span class="cite">[cite: 13]</span>. Die Einzelformeln für komplexe Stahlträger auf Folie 14 (dort steht selbst <em>„Formel zu lang"</em>) sind für Mediziner irrelevant – merke dir lediglich, dass die Geometrie (z. B. der Röhrenknochen als Hohlzylinder mit I = π(D<sup>4</sup>−d<sup>4</sup>)/64) entscheidend für die Biegefestigkeit ist <span class="cite">[cite: 14]</span>.</li>
+          <li><strong>Finite-Elemente-Methode (FEM, Folie 15):</strong> Computergestütztes Verfahren, um Spannungsverteilungen in komplex geformten Bauteilen/Implantaten numerisch zu simulieren <span class="cite">[cite: 15]</span>.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ==================== SEKTION 2: KINEMATIK, ENERGIE & LEISTUNG ==================== -->
+    <section id="sec2" class="tab-section">
+      <h1>2. Kinematik, Arbeit, Energie, Leistung & Impuls</h1>
+      <p class="section-lead">Gegenüberstellung von geradliniger Bewegung (Translation) und Drehbewegung (Rotation) sowie Erhaltungssätze der Mechanik <span class="cite">[cite: 16, 17, 18, 19, 20, 21]</span>.</p>
+
+      <h2>2.1 Die 3 Bewegungszustände & Bewegungsgleichungen</h2>
+      <div class="grid">
+        <div class="card exam-card">
+          <span class="badge exam">🔥 Klausur-Fokus</span>
+          <h3>Die 3 Bewegungszustände (Folie 16)</h3>
+          <ul>
+            <li><strong>Zustand 1 – Ruhend:</strong> |<span class="vec">v</span>(t)| = 0 ⇒ Kräftegleichgewicht ∑<span class="vec">F</span><sub>x,i</sub> = 0 <span class="cite">[cite: 16]</span>.</li>
+            <li><strong>Zustand 2 – Beschleunigt:</strong> |<span class="vec">v</span>(t)| ändert sich (↑↓) ⇒ Resultierende Kraft ∑<span class="vec">F</span><sub>x,i</sub> = m · a ≠ 0 <span class="cite">[cite: 16]</span>.</li>
+            <li><strong>Zustand 3 – Konstant (durch Trägheit):</strong> |<span class="vec">v</span>(t)| = const ⇒ Kräftegleichgewicht ∑<span class="vec">F</span><sub>x,i</sub> = 0 <span class="cite">[cite: 16]</span>.</li>
+            <li><strong>Massenträgheitsmoment (J):</strong> Beschreibt den Widerstand eines starren Körpers gegenüber einer Änderung seiner Rotationsbewegung um eine gegebene Achse <span class="cite">[cite: 16, 19]</span>.</li>
+          </ul>
+        </div>
+
+        <div class="card exam-card">
+          <span class="badge exam">🔥 Klausur-Fokus</span>
+          <h3>Arbeit, Energie, Leistung & Impuls</h3>
+          <ul>
+            <li><strong>Energie vs. Arbeit:</strong> <em>Energie</em> beschreibt den momentanen Zustand eines Systems; <em>Arbeit</em> beschreibt den Prozess der Energieübertragung oder -umwandlung <span class="cite">[cite: 19]</span>.</li>
+            <li><strong>Mechanische Energieerhaltung (z. B. Pendel):</strong>
+              <div class="formula-box">E<sub>mech</sub> = E<sub>pot</sub> + E<sub>kin,lin</sub> + E<sub>kin,rot</sub> = const <span class="cite">[cite: 19]</span></div>
+              Am Umkehrpunkt des Pendels (h = h<sub>max</sub>) ist v = 0 (maximale potentielle Energie m·g·h<sub>max</sub>); am tiefsten Punkt (h = 0) ist v = v<sub>max</sub> (maximale kinetische Energie ½m·v<sub>max</sub><sup>2</sup>) <span class="cite">[cite: 19]</span>.
+            </li>
+            <li><strong>Mechanische Leistung P:</strong> Arbeit pro Zeitspanne (in der Medizin: Ergometrie / körperliche Leistungsdiagnostik) <span class="cite">[cite: 20]</span>:
+              <div class="formula-box">P = <span class="frac"><span>W</span><span>Δt</span></span> &nbsp;|&nbsp; Einheit: 1 Watt [W] = 1 <span class="frac"><span>J</span><span>s</span></span> <span class="cite">[cite: 20]</span></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>2.2 Komplette Übersichtstabelle: Translation, Rotation & Stöße</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Größe</th>
+            <th>Linear (Translation)</th>
+            <th>Rotation (Drehbewegung)</th>
+            <th>Einheit & Zusammenhänge</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Ort / Winkel</strong></td>
+            <td>Weg x <span class="cite">[cite: 17]</span></td>
+            <td>Winkel φ &nbsp;(Bogenlänge s = ω · r<sub>⊥</sub> · t) <span class="cite">[cite: 18]</span></td>
+            <td>[x] = m &nbsp;|&nbsp; [φ] = rad <span class="cite">[cite: 17, 18]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Geschwindigkeit</strong></td>
+            <td><span class="vec">v</span> = ẋ = <span class="frac"><span>d<span class="vec">x</span></span><span>dt</span></span> <span class="cite">[cite: 17]</span></td>
+            <td><span class="vec">ω</span> = φ̇ = <span class="frac"><span>dφ</span><span>dt</span></span> <span class="cite">[cite: 18]</span></td>
+            <td>[v] = m/s &nbsp;|&nbsp; [ω] = rad/s<br>Verknüpfung: <span class="vec">v</span>(t) = <span class="vec">ω</span> × <span class="vec">r</span><sub>⊥</sub> <span class="cite">[cite: 17, 18]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Beschleunigung</strong></td>
+            <td><span class="vec">a</span> = ẍ = <span class="frac"><span>d<span class="vec">v</span></span><span>dt</span></span> <span class="cite">[cite: 17]</span></td>
+            <td>φ̈ = ω̇ = <span class="frac"><span>dφ̇</span><span>dt</span></span> <span class="cite">[cite: 18]</span></td>
+            <td>[a] = m/s<sup>2</sup> &nbsp;|&nbsp; [φ̈] = rad/s<sup>2</sup> <span class="cite">[cite: 17, 18]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Arbeit W</strong></td>
+            <td>W = ∫ F(s) ds <span class="cite">[cite: 19]</span></td>
+            <td>W<sub>rot</sub> = ∫ M(φ) dφ <span class="cite">[cite: 19]</span></td>
+            <td><strong>1 Joule [J] = 1 Nm</strong> <span class="cite">[cite: 19]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Energie E</strong></td>
+            <td>E<sub>kin,lin</sub> = <span class="frac"><span>1</span><span>2</span></span> m · v<sup>2</sup><br>E<sub>pot</sub> = m · g · h <span class="cite">[cite: 19]</span></td>
+            <td>E<sub>kin,rot</sub> = <span class="frac"><span>1</span><span>2</span></span> J · ω<sup>2</sup> <span class="cite">[cite: 19]</span></td>
+            <td><strong>1 Joule [J] = 1 kg · m<sup>2</sup> / s<sup>2</sup></strong> <span class="cite">[cite: 9, 19]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Impuls & Elastischer Stoß</strong></td>
+            <td colspan="2">
+              <strong>Mechanischer Impuls:</strong> <span class="vec">p</span> = ∫ F dt = m · <span class="vec">v</span> <span class="cite">[cite: 21]</span><br>
+              <strong>Impulserhaltungssatz:</strong> m<sub>1</sub><span class="vec">v</span><sub>1</sub> + m<sub>2</sub><span class="vec">v</span><sub>2</sub> = m<sub>1</sub><span class="vec">u</span><sub>1</sub> + m<sub>2</sub><span class="vec">u</span><sub>2</sub> = const <span class="cite">[cite: 21]</span><br>
+              <strong>Energieerhaltungssatz (elastischer Stoß):</strong> ½m<sub>1</sub>v<sub>1</sub><sup>2</sup> + ½m<sub>2</sub>v<sub>2</sub><sup>2</sup> = ½m<sub>1</sub>u<sub>1</sub><sup>2</sup> + ½m<sub>2</sub>u<sub>2</sub><sup>2</sup> = const <span class="cite">[cite: 21]</span>
+            </td>
+            <td>Einheit Impuls:<br><strong>1 Ns = 1 <span class="frac"><span>kg · m</span><span>s</span></span></strong> <span class="cite">[cite: 21]</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ==================== SEKTION 3: THERMODYNAMIK & BEATMUNG ==================== -->
+    <section id="sec3" class="tab-section">
+      <h1>3. Thermodynamik, Stoffmengen, Wärme & Beatmungsdruck</h1>
+      <p class="section-lead">Zusammenhänge zwischen Temperatur, Druck, Volumen, Stoffmenge und Energie – direkt angewendet auf den menschlichen Wärmehaushalt und die Beatmungsmedizin <span class="cite">[cite: 22, 23, 24, 25, 26]</span>.</p>
+
+      <h2>3.1 Die 4 Hauptsätze der Thermodynamik & Wärme</h2>
+      <div class="grid">
+        <div class="card exam-card">
+          <span class="badge exam">🔥 Klausur-Fokus</span>
+          <h3>Die Hauptsätze der Thermodynamik (0. bis 3.)</h3>
+          <ul>
+            <li><strong>0. Hauptsatz (Thermisches Gleichgewicht):</strong> Steht System A mit System B im thermischen Gleichgewicht und B ebenfalls mit C, so stehen auch A und C miteinander im thermischen Gleichgewicht <span class="cite">[cite: 22]</span>.</li>
+            <li><strong>1. Hauptsatz (Energieerhaltung):</strong> Energien sind ineinander umwandelbar, können aber weder erzeugt noch vernichtet werden. Für den Übergang eines geschlossenen Systems gilt:
+              <div class="formula-box">ΔU = ΔW + ΔQ &nbsp;(U = innere Energie, W = Arbeit, Q = Wärme) <span class="cite">[cite: 22]</span></div>
+            </li>
+            <li><strong>2. Hauptsatz (Entropie S & Irreversibilität):</strong> Die Entropie S ist ein Maß für den Ordnungsgrad bzw. die Wahrscheinlichkeit eines Zustands. Auf der Zeitachse bewegt sich ein System nur in Richtung höherer Entropie; sie begrenzt die Umwandlung von thermischer in mechanische Energie <span class="cite">[cite: 22]</span>.</li>
+            <li><strong>3. Hauptsatz (Absoluter Nullpunkt):</strong> Am absoluten Nullpunkt (<strong>0 K = −273,15 °C</strong>, Moleküle in Ruhe) nimmt die Entropie eines reinen, ideal kristallinen Stoffes den Wert Null an. 0 K kann in endlich vielen Schritten nie erreicht werden <span class="cite">[cite: 22, 25]</span>.</li>
+          </ul>
+        </div>
+
+        <div class="card exam-card">
+          <span class="badge exam">🔥 Klausur-Fokus</span>
+          <h3>Wärmeenergie Q, Temperatur T & Enthalpie H</h3>
+          <div class="formula-box">
+            ΔQ = C · ΔT = c · m · ΔT &nbsp;|&nbsp; 1 J = 0,239 cal &nbsp;(1 cal ≈ 4,184 J) <span class="cite">[cite: 25]</span>
+          </div>
+          <ul>
+            <li><strong>Kalorie (cal):</strong> Energie, die nötig ist, um 0,001 kg (1 g) Wasser um 1 °C (= 1 K) zu erwärmen <span class="cite">[cite: 25]</span>.</li>
+            <li><strong>Spezifische Wärmekapazität c:</strong> Wärmeenergie, um 1 kg eines Stoffes um 1 K (bzw. 1 °C) zu erwärmen <span class="cite">[cite: 25]</span>.</li>
+            <li><strong>Enthalpie H (Wärmeinhalt bei konstantem Druck):</strong>
+              <div class="formula-box">H = U + p · V &nbsp;|&nbsp; U<sub>ideales Gas</sub> = <span class="frac"><span>3</span><span>2</span></span> · N · k · T <span class="cite">[cite: 26]</span></div>
+              • <strong>ΔH &lt; 0 (exotherm):</strong> Wärme wird an die Umgebung abgegeben (der Mensch gibt im Ruhezustand über Wärmestrahlung/Schwitzen ca. <strong>100–120 W</strong> ab) <span class="cite">[cite: 26]</span>.<br>
+              • <strong>ΔH &gt; 0 (endotherm):</strong> Wärme wird aus der Umgebung aufgenommen <span class="cite">[cite: 26]</span>.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>3.2 Stoffmengen, Luftfeuchtigkeit & Beatmungsdruckkurve</h2>
+      <div class="grid">
+        <div class="card exam-card">
+          <span class="badge exam">🔥 Klausur-Fokus</span>
+          <h3>Stoffmengen-Begriffe & Luftfeuchtigkeit</h3>
+          <ul>
+            <li><strong>Atomare Masseneinheit u (Dalton):</strong> Genau 1/12 der Masse eines <sup>12</sup>C-Atoms (1 u = 1,66054 · 10<sup>−24</sup> g) <span class="cite">[cite: 23]</span>.</li>
+            <li><strong>Stoffmenge n [mol] & Avogadro-Konstante N<sub>A</sub>:</strong>
+              <div class="formula-box">N = N<sub>A</sub> · n &nbsp;mit&nbsp; N<sub>A</sub> ≈ 6,022 · 10<sup>23</sup> <span class="frac"><span>1</span><span>mol</span></span> <span class="cite">[cite: 23]</span></div>
+            </li>
+            <li><strong>Molare Masse M & Molares Volumen V<sub>m</sub>:</strong>
+              <div class="formula-box">M = <span class="frac"><span>m</span><span>n</span></span> [<span class="frac"><span>g</span><span>mol</span></span>] &nbsp;|&nbsp; V<sub>m</sub> = <span class="frac"><span>V</span><span>n</span></span> ≈ 22,4 <span class="frac"><span>l</span><span>mol</span></span> &nbsp;|&nbsp; Dichte ρ = <span class="frac"><span>m</span><span>V</span></span> <span class="cite">[cite: 23]</span></div>
+            </li>
+            <li><strong>Luftfeuchtigkeit:</strong>
+              <br>• <em>Absolute Luftfeuchtigkeit:</em> Tatsächliche Wasserdampfmenge pro Luftvolumen in <strong>[g/m<sup>3</sup>]</strong> <span class="cite">[cite: 27]</span>.
+              <br>• <em>Relative Luftfeuchtigkeit [%]:</em> Prozentuales Verhältnis aus aktuellem Wasserdampf-Partialdruck und maximal möglichem Sättigungsdampfdruck bei derselben Temperatur <span class="cite">[cite: 27]</span>.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card clinic-card">
+          <span class="badge clinic">🏥 Klinischer Fokus: Anästhesie & Intensivmedizin</span>
+          <h3>Druck & Volumenkontrollierte Beatmung (Folie 24)</h3>
+          <div class="formula-box">
+            p = <span class="frac"><span>F</span><span>A</span></span> &nbsp;|&nbsp; 1 Pa = 10<sup>−5</sup> bar = 1 <span class="frac"><span>N</span><span>m<sup>2</sup></span></span> = 1 <span class="frac"><span>kg</span><span>s<sup>2</sup> · m</span></span> &nbsp;|&nbsp; Arbeit: W = −p · ΔV <span class="cite">[cite: 24]</span>
+          </div>
+          <p><strong>Analyse des Druck-Zeit-Diagramms bei Konstant-Flow-Beatmung:</strong></p>
+          <ul>
+            <li><strong>A → C (Flow-Phase der Inspiration, V̇<sub>Insp</sub> = const):</strong> Der Druck steigt bis zum <strong>Peak Pressure (Spitzendruck, Punkt C)</strong> an. Er setzt sich zusammen aus dem elastischen Dehnungsdruck und dem <strong>Resistance Pressure (R · V̇)</strong> zur Überwindung des <em>Atemwegswiderstands (Resistance R)</em> <span class="cite">[cite: 24]</span>.</li>
+            <li><strong>D → E (Pause-Phase der Inspiration, Flow V̇ = 0):</strong> Ohne Gasfluss fällt der Reibungsanteil (R · V̇) sofort weg; der Druck sinkt auf den <strong>Plateau Pressure</strong>. Dieser entspricht dem <strong>Compliance Pressure (V<sub>T</sub> / C)</strong>, wobei die <em>Compliance C</em> die Dehnbarkeit von Lunge und Schlauchsystem beschreibt <span class="cite">[cite: 24]</span>.</li>
+            <li><strong>E → F (Exspirationszeit):</strong> Der Druck fällt auf den eingestellten <strong>PEEP</strong> (Positive End-Expiratory Pressure, Punkt F) ab <span class="cite">[cite: 24]</span>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SEKTION 4: STRÖMUNG & GASGESETZE ==================== -->
+    <section id="sec4" class="tab-section">
+      <h1>4. Strömungsmechanik (Hämodynamik) & Ideale Gasgesetze</h1>
+      <p class="section-lead">Physikalische Gesetze für strömende Flüssigkeiten (Blutfluss, Stenosen, Turbulenzen) und Gase <span class="cite">[cite: 28, 29, 32, 36, 37, 38, 39]</span>.</p>
+
+      <h2>4.1 Strömungsmechanik: Kontinuität, Bernoulli & Reynoldszahl</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Gesetz / Instrument</th>
+            <th>Formel</th>
+            <th>Physiologische & Klinische Bedeutung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Kontinuitätsgleichung</strong></td>
+            <td>ṁ = ρ · A · v = const<br>(für ρ = const: <strong>A<sub>1</sub> · v<sub>0</sub> = A<sub>2</sub> · v<sub>1</sub></strong>) <span class="cite">[cite: 28]</span></td>
+            <td>Massenerhaltung: Verengt sich ein Blutgefäß (A<sub>2</sub> &lt; A<sub>1</sub>), muss das Blut dort schneller fließen (v<sub>1</sub> &gt; v<sub>0</sub>) <span class="cite">[cite: 28]</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>Reynoldszahl (Re)</strong></td>
+            <td>Re = <span class="frac"><span>ρ · v · d</span><span>η</span></span> <span class="cite">[cite: 29]</span></td>
+            <td>Verhältnis von Trägheits- zu Zähigkeitskräften <span class="cite">[cite: 29]</span>:<br>• <strong>Re &lt; 2300:</strong> laminare Strömung (Schichten, lautlos)<br>• <strong>2300 ≤ Re ≤ 10 000:</strong> Übergangsbereich<br>• <strong>Re &gt; 10 000:</strong> turbulente Strömung (Wirbel, Auskultationsgeräusche!) <span class="cite">[cite: 29]</span></td>
+          </tr>
+          <tr>
+            <td><strong>Bernoulli-Gleichung</strong></td>
+            <td>p + ρ · g · h + <span class="frac"><span>1</span><span>2</span></span> ρ · v<sup>2</sup> = const <span class="cite">[cite: 32]</span></td>
+            <td>Energieerhaltung für stationäre, inkompressible, verlustfreie Strömungen: Summe aus statischem Druck (p), Schweredruck (ρgh) und Staudruck (½ρv<sup>2</sup>) ist konstant <span class="cite">[cite: 32]</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>Torricelli-Gleichung</strong></td>
+            <td>v<sub>1</sub> = √(2 · g · h) <span class="cite">[cite: 33]</span></td>
+            <td>Ausflussgeschwindigkeit aus einem Gefäß in Tiefe h unter dem Flüssigkeitsspiegel <span class="cite">[cite: 33]</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>Prandtl-Rohr (Pitot-Rohr)</strong></td>
+            <td>v<sub>0</sub> = √(<span class="frac"><span>2 · Δp</span><span>ρ</span></span>) <span class="cite">[cite: 34]</span></td>
+            <td>Misst Strömungsgeschwindigkeit v<sub>0</sub> über die Druckdifferenz Δp zwischen Staupunkt (v<sub>1</sub> = 0) und statischem Druck <span class="cite">[cite: 34]</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>Venturi-Rohr</strong></td>
+            <td>v<sub>0</sub> = √(<span class="frac"><span>2 · Δp</span><span>ρ · ((A<sub>0</sub>/A<sub>1</sub>)<sup>2</sup> − 1)</span></span>) <span class="cite">[cite: 35]</span></td>
+            <td>Misst Strömungsgeschwindigkeit über den statischen Druckabfall Δp an einer definierten Rohrverengung (A<sub>1</sub> &lt; A<sub>0</sub>) <span class="cite">[cite: 35]</span>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <details class="low-yield">
+        <summary>⚙️ Am Rande erwähnt (Ingenieurs-Exkurs): Navier-Stokes-Gleichung vs. Euler-Gleichung</summary>
+        <p>Die komplizierten partiellen Differentialgleichungen auf Folie 30 und 31 musst du als Mediziner <strong>nicht</strong> berechnen. Merke dir lediglich die Zuordnung:</p>
+        <ul>
+          <li><strong>Navier-Stokes-Gleichung:</strong> Allgemeines mathematisches Modell für die Strömung linearer, <em>viskoser (reibungsbehafteter)</em>, newtonscher Flüssigkeiten und Gase <span class="cite">[cite: 30]</span>.</li>
+          <li><strong>Euler-Gleichung:</strong> Vereinfachte Bewegungsgleichung, wenn bei <em>geringer Viskosität</em> (hoher Reynoldszahl) die innere Reibung vernachlässigt werden kann <span class="cite">[cite: 31]</span>.</li>
+        </ul>
+      </details>
+
+      <h2>4.2 Die Idealen Gasgesetze & Interaktiver Gas-Rechner</h2>
+      <div class="grid">
+        <div class="card exam-card">
+          <span class="badge exam">🔥 Klausur-Fokus</span>
+          <h3>Allgemeine Gasgleichung & Spezialfälle</h3>
+          <div class="formula-box">
+            p · V = n · R<sub>M</sub> · T &nbsp;(mit R<sub>M</sub> ≈ 8,3145 <span class="frac"><span>J</span><span>mol · K</span></span>) <span class="cite">[cite: 36]</span>
+          </div>
+          <p><small>Annahmen ideales Gas: Teilchen besitzen kein Eigenvolumen, üben keine Wechselwirkungen aufeinander aus, Stöße sind vollkommen elastisch <span class="cite">[cite: 36]</span>.</small></p>
+          <ul>
+            <li><strong>1. Gesetz von Boyle-Mariotte (isotherm, T = const):</strong>
+              <div class="formula-box">p · V = const &nbsp;⇒&nbsp; p<sub>0</sub> · V<sub>0</sub> = p<sub>1</sub> · V<sub>1</sub> <span class="cite">[cite: 37]</span></div>
+            </li>
+            <li><strong>2. Gesetz von Gay-Lussac (isobar, p = const):</strong>
+              <div class="formula-box"><span class="frac"><span>V</span><span>T</span></span> = const &nbsp;⇒&nbsp; <span class="frac"><span>V<sub>0</sub></span><span>T<sub>0</sub></span></span> = <span class="frac"><span>V<sub>1</sub></span><span>T<sub>1</sub></span></span> <span class="cite">[cite: 38]</span></div>
+            </li>
+            <li><strong>3. Gesetz von Amontons (isochor, V = const):</strong>
+              <div class="formula-box"><span class="frac"><span>p</span><span>T</span></span> = const &nbsp;⇒&nbsp; <span class="frac"><span>p<sub>0</sub></span><span>T<sub>0</sub></span></span> = <span class="frac"><span>p<sub>1</sub></span><span>T<sub>1</sub></span></span> <span class="cite">[cite: 39]</span></div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Interaktiver Klausurrechner: Kontinuität & Boyle-Mariotte</h3>
+          <p><strong>1. Gefäßstenose (A<sub>1</sub> · v<sub>0</sub> = A<sub>2</sub> · v<sub>1</sub>) <span class="cite">[cite: 28]</span>:</strong></p>
+          <div class="calc-row">
+            <label>A<sub>1</sub> [cm<sup>2</sup>]: <input type="number" step="0.1" id="area1" class="calc-input" value="2.0" oninput="calcCont()"></label>
+            <label>v<sub>0</sub> [m/s]: <input type="number" step="0.1" id="vel0" class="calc-input" value="0.3" oninput="calcCont()"></label>
+            <label>A<sub>2</sub> [cm<sup>2</sup>]: <input type="number" step="0.1" id="area2" class="calc-input" value="0.5" oninput="calcCont()"></label>
+          </div>
+          <div class="formula-box" id="contOut">v₁ in der Engstelle = 1,20 m/s</div>
+
+          <p style="margin-top: 14px;"><strong>2. Boyle-Mariotte (p<sub>0</sub> · V<sub>0</sub> = p<sub>1</sub> · V<sub>1</sub>) <span class="cite">[cite: 37]</span>:</strong></p>
+          <div class="calc-row">
+            <label>p<sub>0</sub> [bar]: <input type="number" step="0.1" id="p0" class="calc-input" value="1.0" oninput="calcBoyle()"></label>
+            <label>V<sub>0</sub> [l]: <input type="number" step="0.5" id="v0" class="calc-input" value="6.0" oninput="calcBoyle()"></label>
+            <label>p<sub>1</sub> [bar]: <input type="number" step="0.1" id="p1" class="calc-input" value="2.0" oninput="calcBoyle()"></label>
+          </div>
+          <div class="formula-box" id="boyleOut">Neues Volumen V₁ = 3,00 l</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function openTab(tabId, btn) {
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if (btn) btn.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleExamMode() {
+      const body = document.body;
+      const btn = document.getElementById('examFilterBtn');
+      body.classList.toggle('exam-only');
+      const isActive = body.classList.contains('exam-only');
+      btn.classList.toggle('active-filter', isActive);
+      btn.textContent = isActive ? '🎯 Nur Prüfungsrelevantes: AN' : '🎯 Nur Prüfungsrelevantes: AUS';
+    }
+
+    function filterContent() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const sections = document.querySelectorAll('.tab-section');
+      if (!q) {
+        sections.forEach(s => s.style.display = '');
+        const activeBtn = document.querySelector('.nav-btn.active');
+        const idx = Array.from(document.querySelectorAll('.nav-btn')).indexOf(activeBtn);
+        sections.forEach((s, i) => s.classList.toggle('active', i === idx));
+        return;
+      }
+      sections.forEach(s => {
+        const match = s.innerText.toLowerCase().includes(q);
+        s.style.display = match ? 'block' : 'none';
+      });
+    }
+
+    function calcCont() {
+      const a1 = parseFloat(document.getElementById('area1').value);
+      const v0 = parseFloat(document.getElementById('vel0').value);
+      const a2 = parseFloat(document.getElementById('area2').value);
+      const out = document.getElementById('contOut');
+      if (a1 > 0 && a2 > 0 && v0 >= 0) {
+        const v1 = (a1 * v0) / a2;
+        out.textContent = 'v₁ in der Engstelle = ' + v1.toFixed(2) + ' m/s';
+      } else {
+        out.textContent = 'Bitte positive Werte eingeben.';
+      }
+    }
+
+    function calcBoyle() {
+      const p0 = parseFloat(document.getElementById('p0').value);
+      const v0 = parseFloat(document.getElementById('v0').value);
+      const p1 = parseFloat(document.getElementById('p1').value);
+      const out = document.getElementById('boyleOut');
+      if (p0 > 0 && v0 > 0 && p1 > 0) {
+        const v1 = (p0 * v0) / p1;
+        out.textContent = 'Neues Volumen V₁ = ' + v1.toFixed(2) + ' l';
+      } else {
+        out.textContent = 'Bitte positive Werte eingeben.';
+      }
+    }
+  </script>
+</body>
+</html>
